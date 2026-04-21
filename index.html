@@ -1,106 +1,283 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taschenrechner</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #333;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-       .container {
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 300px;
-        }
-       .display {
-            background-color: #444;
-            color: #fff;
-            border-radius: 10px 10px 0 0;
-            padding: 10px;
-            text-align: right;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-       .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        button {
-            background-color: #555;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover, button:active {
-            background-color: #666;
-        }
-       .result {
-            background-color: #444;
-            color: #fff;
-            border-radius: 10px 10px 0 0;
-            padding: 10px;
-            text-align: right;
-            font-size: 2em;
-            margin-top: 10px;
-        }
-       .keyboard {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-       .keyboard button {
-            background-color: #555;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-       .keyboard button:hover,.keyboard button:active {
-            background-color: #666;
-        }
-       .keyboard button.enter {
-            background-color: #ff5733;
-            color: #fff;
-        }
-       .keyboard button.escape {
-            background-color: #ff5733;
-            color: #fff;
-        }
-       .keyboard button.backspace {
-            background-color: #ff5733;
-            color: #fff;
-        }
-       .keyboard button.plusminus {
-            background-color: #ff5733;
-            color: #fff;
-        }
-       .keyboard button.leftparentheses {
-            background-color: #ff5733;
-            color: #fff;
-        }
-       .keyboard button.rightparentheses {
-            background-color: #ff5733;
-            color: #fff;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaputter Taschenrechner</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+    }
+
+    .rechner {
+        background: #3a3a3a;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5), 
+                    inset 0 2px 3px rgba(255,255,255,0.1);
+        width: 320px;
+    }
+
+    .display {
+        background: #c8d6c8;
+        color: #1a1a1a;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        text-align: right;
+        font-family: 'Courier New', monospace;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .verlauf {
+        font-size: 14px;
+        opacity: 0.6;
+        min-height: 20px;
+        overflow: hidden;
+        word-wrap: break-word;
+    }
+
+    .eingabe {
+        font-size: 32px;
+        font-weight: bold;
+        overflow: hidden;
+        word-wrap: break-word;
+    }
+
+    .tasten {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    button {
+        border: none;
+        border-radius: 12px;
+        font-size: 20px;
+        padding: 18px;
+        cursor: pointer;
+        background: #4a4a4a;
+        color: #fff;
+        box-shadow: 0 4px 0 #2a2a2a, 0 5px 10px rgba(0,0,0,0.3);
+        transition: all 0.1s;
+        user-select: none;
+    }
+
+    button:active {
+        transform: translateY(4px);
+        box-shadow: 0 0 0 #2a2a2a;
+    }
+
+    .operator {
+        background: #ff9500;
+        box-shadow: 0 4px 0 #cc7700, 0 5px 10px rgba(0,0,0,0.3);
+    }
+
+    .operator:active {
+        box-shadow: 0 0 0 #cc7700;
+    }
+
+    .funktion {
+        background: #a5a5a5;
+        color: #000;
+        box-shadow: 0 4px 0 #858585, 0 5px 10px rgba(0,0,0,0.3);
+    }
+
+    .funktion:active {
+        box-shadow: 0 0 0 #858585;
+    }
+
+    .loesen {
+        font-size: 12px;
+        padding: 18px 8px;
+        background: #4a4a4a;
+        box-shadow: 0 4px 0 #2a2a2a, 0 5px 10px rgba(0,0,0,0.3);
+    }
+
+    .ist-gleich {
+        grid-column: span 2;
+    }
+</style>
 </head>
 <body>
-    <div class="container
+    <div class="rechner">
+        <div class="display">
+            <div class="verlauf" id="verlauf"></div>
+            <div class="eingabe" id="eingabe">0</div>
+        </div>
+        <div class="tasten">
+            <button class="funktion" onclick="clearAll()">C</button>
+            <button class="funktion" onclick="clearEntry()">CE</button>
+            <button class="funktion" onclick="prozent()">%</button>
+            <button class="operator" onclick="eingabeOperator('/')">/</button>
+
+            <button onclick="eingabeZahl('7')">7</button>
+            <button onclick="eingabeZahl('8')">8</button>
+            <button onclick="eingabeZahl('9')">9</button>
+            <button class="operator" onclick="eingabeOperator('*')">*</button>
+
+            <button onclick="eingabeZahl('4')">4</button>
+            <button onclick="eingabeZahl('5')">5</button>
+            <button onclick="eingabeZahl('6')">6</button>
+            <button class="operator" onclick="eingabeOperator('-')">-</button>
+
+            <button onclick="eingabeZahl('1')">1</button>
+            <button onclick="eingabeZahl('2')">2</button>
+            <button onclick="eingabeZahl('3')">3</button>
+            <button class="operator" onclick="eingabeOperator('+')">+</button>
+
+            <button onclick="vorzeichen()">+/-</button>
+            <button onclick="eingabeZahl('0')">0</button>
+            <button onclick="eingabeZahl('.')">.</button>
+            <button class="operator ist-gleich" onclick="berechnen()">=</button>
+
+            <button class="loesen" onclick="loesen()">LÖSEN</button>
+        </div>
+    </div>
+
+<script>
+    // Zustand des Rechners
+    let aktuelleEingabe = '0';
+    let verlauf = '';
+    let istKaputt = true; // Startet kaputt
+    let letzteEingabe = '';
+    const geheimCode = '041013'; // Der Code zum Reparieren
+
+    const eingabeEl = document.getElementById('eingabe');
+    const verlaufEl = document.getElementById('verlauf');
+
+    function updateDisplay() {
+        eingabeEl.textContent = aktuelleEingabe;
+        verlaufEl.textContent = verlauf;
+    }
+
+    function eingabeZahl(zahl) {
+        if (aktuelleEingabe === '0' || aktuelleEingabe === 'lass mich in Ruhe ich bin kaputt' || 
+            aktuelleEingabe === 'System repariert' || aktuelleEingabe === 'Falscher Code' || aktuelleEingabe === 'Fehler') {
+            aktuelleEingabe = zahl;
+        } else {
+            aktuelleEingabe += zahl;
+        }
+        updateDisplay();
+    }
+
+    function eingabeOperator(op) {
+        // Verhindert doppelte Operatoren
+        if (/[+\-*/]$/.test(aktuelleEingabe)) {
+            aktuelleEingabe = aktuelleEingabe.slice(0, -1) + op;
+        } else {
+            aktuelleEingabe += op;
+        }
+        updateDisplay();
+    }
+
+    function berechnen() {
+        letzteEingabe = aktuelleEingabe;
+        verlauf = aktuelleEingabe + ' =';
+        
+        if (istKaputt) {
+            aktuelleEingabe = 'lass mich in Ruhe ich bin kaputt';
+        } else {
+            try {
+                // Sicher auswerten mit Function statt eval
+                let ergebnis = Function('"use strict"; return (' + aktuelleEingabe.replace(/×/g, '*').replace(/÷/g, '/') + ')')();
+                
+                // Division durch 0 abfangen
+                if (!isFinite(ergebnis)) {
+                    aktuelleEingabe = 'Fehler';
+                } else {
+                    // Rundungsfehler vermeiden
+                    aktuelleEingabe = parseFloat(ergebnis.toFixed(10)).toString();
+                }
+            } catch (e) {
+                aktuelleEingabe = 'Fehler';
+            }
+        }
+        updateDisplay();
+    }
+
+    function loesen() {
+        // Prüft ob der Geheimcode eingegeben wurde
+        if (aktuelleEingabe === geheimCode) {
+            aktuelleEingabe = 'System repariert';
+            updateDisplay();
+            istKaputt = false;
+            
+            // Nach 2 Sek wieder auf 0 setzen
+            setTimeout(() => {
+                aktuelleEingabe = '0';
+                verlauf = '';
+                updateDisplay();
+            }, 2000);
+        } else {
+            // Falscher Code
+            verlauf = aktuelleEingabe;
+            aktuelleEingabe = 'Falscher Code';
+            updateDisplay();
+            
+            setTimeout(() => {
+                aktuelleEingabe = '0';
+                verlauf = '';
+                updateDisplay();
+            }, 1000);
+        }
+    }
+
+    function clearAll() {
+        aktuelleEingabe = '0';
+        verlauf = '';
+        updateDisplay();
+        // istKaputt bleibt wie es ist - nur LÖSEN kann reparieren
+    }
+
+    function clearEntry() {
+        aktuelleEingabe = '0';
+        updateDisplay();
+    }
+
+    function prozent() {
+        try {
+            aktuelleEingabe = (parseFloat(aktuelleEingabe) / 100).toString();
+        } catch {
+            aktuelleEingabe = '0';
+        }
+        updateDisplay();
+    }
+
+    function vorzeichen() {
+        if (aktuelleEingabe !== '0' && !isNaN(aktuelleEingabe)) {
+            aktuelleEingabe = (parseFloat(aktuelleEingabe) * -1).toString();
+            updateDisplay();
+        }
+    }
+
+    // Tastatur-Support
+    document.addEventListener('keydown', (e) => {
+        if (e.key >= '0' && e.key <= '9') eingabeZahl(e.key);
+        if (e.key === '.') eingabeZahl('.');
+        if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') eingabeOperator(e.key);
+        if (e.key === 'Enter' || e.key === '=') berechnen();
+        if (e.key === 'Escape') clearAll();
+        if (e.key === 'Backspace') clearEntry();
+        if (e.key === '%') prozent();
+    });
+
+    updateDisplay();
+</script>
+</body>
+</html>
