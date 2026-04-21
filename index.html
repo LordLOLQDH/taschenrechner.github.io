@@ -53,7 +53,7 @@
     }
 
     .eingabe {
-        font-size: 32px;
+        font-size: 26px;
         font-weight: bold;
         overflow: hidden;
         word-wrap: break-word;
@@ -102,13 +102,6 @@
         box-shadow: 0 0 0 #858585;
     }
 
-    .loesen {
-        font-size: 12px;
-        padding: 18px 8px;
-        background: #4a4a4a;
-        box-shadow: 0 4px 0 #2a2a2a, 0 5px 10px rgba(0,0,0,0.3);
-    }
-
     .ist-gleich {
         grid-column: span 2;
     }
@@ -145,18 +138,14 @@
             <button onclick="eingabeZahl('0')">0</button>
             <button onclick="eingabeZahl('.')">.</button>
             <button class="operator ist-gleich" onclick="berechnen()">=</button>
-
-            <button class="loesen" onclick="loesen()">LÖSEN</button>
         </div>
     </div>
 
 <script>
-    // Zustand des Rechners
     let aktuelleEingabe = '0';
     let verlauf = '';
     let istKaputt = true; // Startet kaputt
-    let letzteEingabe = '';
-    const geheimCode = '041013'; // Der Code zum Reparieren
+    const geheimCode = '41013';
 
     const eingabeEl = document.getElementById('eingabe');
     const verlaufEl = document.getElementById('verlauf');
@@ -167,8 +156,11 @@
     }
 
     function eingabeZahl(zahl) {
-        if (aktuelleEingabe === '0' || aktuelleEingabe === 'lass mich in Ruhe ich bin kaputt' || 
-            aktuelleEingabe === 'System repariert' || aktuelleEingabe === 'Falscher Code' || aktuelleEingabe === 'Fehler') {
+        // Reset wenn Meldung angezeigt wird
+        if (aktuelleEingabe === '0' || 
+            aktuelleEingabe === 'lass mich in Ruhe ich bin kaputt' || 
+            aktuelleEingabe === 'System repariert' || 
+            aktuelleEingabe === 'Fehler') {
             aktuelleEingabe = zahl;
         } else {
             aktuelleEingabe += zahl;
@@ -177,7 +169,6 @@
     }
 
     function eingabeOperator(op) {
-        // Verhindert doppelte Operatoren
         if (/[+\-*/]$/.test(aktuelleEingabe)) {
             aktuelleEingabe = aktuelleEingabe.slice(0, -1) + op;
         } else {
@@ -187,21 +178,33 @@
     }
 
     function berechnen() {
-        letzteEingabe = aktuelleEingabe;
+        // Geheimcode-Check: 41013 + = repariert den Rechner
+        if (aktuelleEingabe === geheimCode && istKaputt) {
+            aktuelleEingabe = 'System repariert';
+            verlauf = '';
+            updateDisplay();
+            istKaputt = false;
+            
+            setTimeout(() => {
+                aktuelleEingabe = '0';
+                updateDisplay();
+            }, 2000);
+            return;
+        }
+
+        // Normale Berechnung
         verlauf = aktuelleEingabe + ' =';
         
         if (istKaputt) {
+            // Kaputt: Immer Troll-Nachricht
             aktuelleEingabe = 'lass mich in Ruhe ich bin kaputt';
         } else {
+            // Repariert: Richtig rechnen
             try {
-                // Sicher auswerten mit Function statt eval
-                let ergebnis = Function('"use strict"; return (' + aktuelleEingabe.replace(/×/g, '*').replace(/÷/g, '/') + ')')();
-                
-                // Division durch 0 abfangen
+                let ergebnis = Function('"use strict"; return (' + aktuelleEingabe + ')')();
                 if (!isFinite(ergebnis)) {
                     aktuelleEingabe = 'Fehler';
                 } else {
-                    // Rundungsfehler vermeiden
                     aktuelleEingabe = parseFloat(ergebnis.toFixed(10)).toString();
                 }
             } catch (e) {
@@ -211,38 +214,10 @@
         updateDisplay();
     }
 
-    function loesen() {
-        // Prüft ob der Geheimcode eingegeben wurde
-        if (aktuelleEingabe === geheimCode) {
-            aktuelleEingabe = 'System repariert';
-            updateDisplay();
-            istKaputt = false;
-            
-            // Nach 2 Sek wieder auf 0 setzen
-            setTimeout(() => {
-                aktuelleEingabe = '0';
-                verlauf = '';
-                updateDisplay();
-            }, 2000);
-        } else {
-            // Falscher Code
-            verlauf = aktuelleEingabe;
-            aktuelleEingabe = 'Falscher Code';
-            updateDisplay();
-            
-            setTimeout(() => {
-                aktuelleEingabe = '0';
-                verlauf = '';
-                updateDisplay();
-            }, 1000);
-        }
-    }
-
     function clearAll() {
         aktuelleEingabe = '0';
         verlauf = '';
         updateDisplay();
-        // istKaputt bleibt wie es ist - nur LÖSEN kann reparieren
     }
 
     function clearEntry() {
@@ -260,13 +235,12 @@
     }
 
     function vorzeichen() {
-        if (aktuelleEingabe !== '0' && !isNaN(aktuelleEingabe)) {
+        if (!isNaN(aktuelleEingabe) && aktuelleEingabe !== '0') {
             aktuelleEingabe = (parseFloat(aktuelleEingabe) * -1).toString();
             updateDisplay();
         }
     }
 
-    // Tastatur-Support
     document.addEventListener('keydown', (e) => {
         if (e.key >= '0' && e.key <= '9') eingabeZahl(e.key);
         if (e.key === '.') eingabeZahl('.');
@@ -274,7 +248,6 @@
         if (e.key === 'Enter' || e.key === '=') berechnen();
         if (e.key === 'Escape') clearAll();
         if (e.key === 'Backspace') clearEntry();
-        if (e.key === '%') prozent();
     });
 
     updateDisplay();
